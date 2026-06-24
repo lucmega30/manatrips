@@ -47,7 +47,8 @@ body {
 
 /* HERO */
 .hero {
-  background: linear-gradient(135deg, #1a3a5c, #00b4d8);
+  background: linear-gradient(rgba(26, 58, 92, 0.55), rgba(0, 180, 216, 0.45)),
+              url('../images/hero-playa.jpg') center 59%/cover no-repeat;
   color: white;
   text-align: center;
   padding: 100px 20px;
