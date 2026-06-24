@@ -20,6 +20,9 @@ app.get('/api', (req, res) => {
 });
 
 // Iniciar servidor
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'views', 'login.html'));
+});
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
