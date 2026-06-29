@@ -2,17 +2,13 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-
-// Importamos las herramientas de validación
 const { body, validationResult } = require('express-validator');
 
-// Nuestra "Base de Datos" temporal en memoria
 const usuariosMock = [];
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // ==========================================
-// MIDDLEWARE: El Guardián de las rutas
+// MIDDLEWARE 1: El Guardián de Autenticación
 // ==========================================
 function verificarToken(req, res, next) {
     const tokenHeader = req.header('Authorization');
@@ -24,7 +20,7 @@ function verificarToken(req, res, next) {
 
     try {
         const verificado = jwt.verify(token, JWT_SECRET);
-        req.usuario = verificado; 
+        req.usuario = verificado; // Aquí ya viene el id, nombre Y ROL
         next(); 
     } catch (error) {
         res.status(401).json({ error: "Token inválido o expirado." });
@@ -32,40 +28,40 @@ function verificarToken(req, res, next) {
 }
 
 // ==========================================
-// REGRELA DE VALIDACIÓN (Middlewares específicos)
+//MIDDLEWARE 2: El Guardián de Roles (Autorización)
+// ==========================================
+function verificarRol(rolesPermitidos) {
+    return (req, res, next) => {
+        // Verificamos si el rol del usuario está dentro de los roles permitidos para la ruta
+        if (!rolesPermitidos.includes(req.usuario.rol)) {
+            return res.status(403).json({ 
+                error: `Acceso prohibido. Esta acción es exclusiva para roles: [${rolesPermitidos.join(', ')}]` 
+            });
+        }
+        next(); // Si tiene el rol, ¡lo dejamos pasar!
+    };
+}
+
+// ==========================================
+// REGLAS DE VALIDACIÓN
 // ==========================================
 const validacionRegistro = [
-    body('nombre')
-        .trim()
-        .notEmpty().withMessage('El nombre es obligatorio.'),
-    body('correo')
-        .isEmail().withMessage('Por favor, ingresa un correo electrónico válido.')
-        .normalizeEmail(), // Limpia el correo (ej. quita espacios, pasa a minúsculas)
-    body('password')
-        .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres.')
-];
-
-const validacionLogin = [
-    body('correo')
-        .isEmail().withMessage('Por favor, ingresa un correo válido.'),
-    body('password')
-        .notEmpty().withMessage('La contraseña es obligatoria.')
+    body('nombre').trim().notEmpty().withMessage('El nombre es obligatorio.'),
+    body('correo').isEmail().withMessage('Ingresa un correo válido.').normalizeEmail(),
+    body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres.')
 ];
 
 // ==========================================
-// 1. RUTA DE REGISTRO (POST /api/usuarios/registro)
+// 1. RUTA DE REGISTRO
 // ==========================================
-// Nota que agregamos 'validacionRegistro' como middleware
 router.post('/registro', validacionRegistro, async (req, res) => {
-    // NUEVO: Verificar si express-validator encontró errores
     const errores = validationResult(req);
     if (!errores.isEmpty()) {
-        // Si hay errores, devolvemos un código 400 con la lista de fallos
         return res.status(400).json({ errores: errores.array() });
     }
 
     try {
-        const { nombre, correo, password } = req.body;
+        const { nombre, correo, password, rol } = req.body;
 
         const existeUsuario = usuariosMock.find(user => user.correo === correo);
         if (existeUsuario) {
@@ -79,14 +75,16 @@ router.post('/registro', validacionRegistro, async (req, res) => {
             id: usuariosMock.length + 1,
             nombre,
             correo,
-            password: passwordEncriptada
+            password: passwordEncriptada,
+            //Si no mandan rol, por defecto es 'turista'. Para pruebas permitimos asignar 'admin'.
+            rol: rol || 'turista' 
         };
 
         usuariosMock.push(nuevoUsuario);
 
         res.status(201).json({
             mensaje: "¡Usuario registrado con éxito!",
-            usuario: { id: nuevoUsuario.id, nombre: nuevoUsuario.nombre, correo: nuevoUsuario.correo }
+            usuario: { id: nuevoUsuario.id, nombre: nuevoUsuario.nombre, correo: nuevoUsuario.correo, rol: nuevoUsuario.rol }
         });
 
     } catch (error) {
@@ -96,14 +94,9 @@ router.post('/registro', validacionRegistro, async (req, res) => {
 });
 
 // ==========================================
-// 2. RUTA DE LOGIN (POST /api/usuarios/login)
+// 2. RUTA DE LOGIN
 // ==========================================
-router.post('/login', validacionLogin, async (req, res) => {
-    const errores = validationResult(req);
-    if (!errores.isEmpty()) {
-        return res.status(400).json({ errores: errores.array() });
-    }
-
+router.post('/login', async (req, res) => {
     try {
         const { correo, password } = req.body;
 
@@ -117,8 +110,9 @@ router.post('/login', validacionLogin, async (req, res) => {
             return res.status(400).json({ error: "Credenciales incorrectas." });
         }
 
+        // Incluimos el ROL en el pastel del JWT
         const token = jwt.sign(
-            { id: usuario.id, nombre: usuario.nombre },
+            { id: usuario.id, nombre: usuario.nombre, rol: usuario.rol },
             JWT_SECRET,
             { expiresIn: '1h' }
         );
@@ -126,7 +120,7 @@ router.post('/login', validacionLogin, async (req, res) => {
         res.json({
             mensaje: "¡Inicio de sesión exitoso!",
             token,
-            usuario: { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo }
+            usuario: { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol }
         });
 
     } catch (error) {
@@ -136,17 +130,25 @@ router.post('/login', validacionLogin, async (req, res) => {
 });
 
 // ==========================================
-// 3. RUTA PROTEGIDA: Perfil (GET /api/usuarios/perfil)
+// 3. RUTA PROTEGIDA: Perfil (Cualquier usuario autenticado)
 // ==========================================
 router.get('/perfil', verificarToken, (req, res) => {
     const usuario = usuariosMock.find(user => user.id === req.usuario.id);
-    if (!usuario) {
-        return res.status(404).json({ error: "Usuario no encontrado." });
-    }
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado." });
 
     res.json({
-        mensaje: "¡Petición exitosa! El guardián validó tu token nítidamente.",
-        perfil: { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo }
+        mensaje: "¡Token válido!",
+        perfil: { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol }
+    });
+});
+
+// ==========================================
+//4. RUTA PROTEGIDA EXCLUSIVA: Panel de Admin (GET /api/usuarios/admin/panel)
+// ==========================================
+// Encadenamos los guardianes: Primero que esté logueado, luego que sea 'admin'
+router.get('/admin/panel', verificarToken, verificarRol(['admin']), (req, res) => {
+    res.json({
+        mensaje: "¡Bienvenido, Administrador! Tienes acceso al panel de control de ManaTrip."
     });
 });
 
