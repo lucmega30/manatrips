@@ -3,49 +3,69 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
+// Importamos las herramientas de validación
+const { body, validationResult } = require('express-validator');
+
 // Nuestra "Base de Datos" temporal en memoria
 const usuariosMock = [];
-
-// ¡MEJORA DE SEGURIDAD!: Leemos la clave secreta directamente desde el archivo .env
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // ==========================================
 // MIDDLEWARE: El Guardián de las rutas
 // ==========================================
 function verificarToken(req, res, next) {
-    // Buscamos el token en las cabeceras de la petición (Authorization)
     const tokenHeader = req.header('Authorization');
-    
     if (!tokenHeader) {
         return res.status(401).json({ error: "Acceso denegado. No se proporcionó un token." });
     }
 
-    // El formato estándar es "Bearer TOKEN_AQUÍ", así que limpiamos el texto
     const token = tokenHeader.replace('Bearer ', '');
 
     try {
-        // Verificamos si el token es real y fue firmado con nuestra clave secreta
         const verificado = jwt.verify(token, JWT_SECRET);
-        
-        // Guardamos los datos decodificados del usuario dentro de la petición (req)
         req.usuario = verificado; 
-        
-        next(); // ¡Todo bien! Le permitimos pasar a la ruta real
+        next(); 
     } catch (error) {
         res.status(401).json({ error: "Token inválido o expirado." });
     }
 }
 
 // ==========================================
+// REGRELA DE VALIDACIÓN (Middlewares específicos)
+// ==========================================
+const validacionRegistro = [
+    body('nombre')
+        .trim()
+        .notEmpty().withMessage('El nombre es obligatorio.'),
+    body('correo')
+        .isEmail().withMessage('Por favor, ingresa un correo electrónico válido.')
+        .normalizeEmail(), // Limpia el correo (ej. quita espacios, pasa a minúsculas)
+    body('password')
+        .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres.')
+];
+
+const validacionLogin = [
+    body('correo')
+        .isEmail().withMessage('Por favor, ingresa un correo válido.'),
+    body('password')
+        .notEmpty().withMessage('La contraseña es obligatoria.')
+];
+
+// ==========================================
 // 1. RUTA DE REGISTRO (POST /api/usuarios/registro)
 // ==========================================
-router.post('/registro', async (req, res) => {
+// Nota que agregamos 'validacionRegistro' como middleware
+router.post('/registro', validacionRegistro, async (req, res) => {
+    // NUEVO: Verificar si express-validator encontró errores
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+        // Si hay errores, devolvemos un código 400 con la lista de fallos
+        return res.status(400).json({ errores: errores.array() });
+    }
+
     try {
         const { nombre, correo, password } = req.body;
-
-        if (!nombre || !correo || !password) {
-            return res.status(400).json({ error: "Todos los campos son obligatorios." });
-        }
 
         const existeUsuario = usuariosMock.find(user => user.correo === correo);
         if (existeUsuario) {
@@ -78,13 +98,14 @@ router.post('/registro', async (req, res) => {
 // ==========================================
 // 2. RUTA DE LOGIN (POST /api/usuarios/login)
 // ==========================================
-router.post('/login', async (req, res) => {
+router.post('/login', validacionLogin, async (req, res) => {
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+        return res.status(400).json({ errores: errores.array() });
+    }
+
     try {
         const { correo, password } = req.body;
-
-        if (!correo || !password) {
-            return res.status(400).json({ error: "Correo y contraseña son obligatorios." });
-        }
 
         const usuario = usuariosMock.find(user => user.correo === correo);
         if (!usuario) {
@@ -96,7 +117,6 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Credenciales incorrectas." });
         }
 
-        // Firmamos el token incluyendo el ID y el nombre del usuario
         const token = jwt.sign(
             { id: usuario.id, nombre: usuario.nombre },
             JWT_SECRET,
@@ -118,22 +138,15 @@ router.post('/login', async (req, res) => {
 // ==========================================
 // 3. RUTA PROTEGIDA: Perfil (GET /api/usuarios/perfil)
 // ==========================================
-// Nota cómo agregamos 'verificarToken' antes de la función de la ruta
 router.get('/perfil', verificarToken, (req, res) => {
-    // Si el middleware lo dejó pasar, req.usuario contiene los datos del token
     const usuario = usuariosMock.find(user => user.id === req.usuario.id);
-    
     if (!usuario) {
         return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
     res.json({
         mensaje: "¡Petición exitosa! El guardián validó tu token nítidamente.",
-        perfil: {
-            id: usuario.id,
-            nombre: usuario.nombre,
-            correo: usuario.correo
-        }
+        perfil: { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo }
     });
 });
 
