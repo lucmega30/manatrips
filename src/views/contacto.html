@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - ManaTrip</title>
+    </head>
+<body>
+
+    <main style="padding: 2rem; max-width: 600px; margin: 0 auto;">
+        <section class="contacto-contenedor">
+            <h2>Contáctanos</h2>
+            <p>¿Tienes alguna duda sobre nuestros destinos o te gustaría ser un proveedor local en ManaTrip? Llena el formulario y nos comunicaremos contigo.</p>
+            
+            <form action="/api/contacto" method="POST" class="formulario-contacto">
+                
+                <div style="margin-bottom: 1rem;">
+                    <label for="nombre">Nombre completo:</label><br>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required style="width: 100%; padding: 0.5rem;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="email">Correo electrónico:</label><br>
+                    <input type="email" id="email" name="email" placeholder="tu@correo.com" required style="width: 100%; padding: 0.5rem;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="asunto">Asunto:</label><br>
+                    <input type="text" id="asunto" name="asunto" placeholder="Motivo de tu mensaje" required style="width: 100%; padding: 0.5rem;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="mensaje">Mensaje:</label><br>
+                    <textarea id="mensaje" name="mensaje" rows="5" placeholder="Escribe tu mensaje aquí..." required style="width: 100%; padding: 0.5rem;"></textarea>
+                </div>
+
+                <button type="submit" style="padding: 0.7rem 1.5rem; background-color: #005A9C; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Enviar Mensaje
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <footer style="background-color: #f4f4f4; padding: 2rem; text-align: center; margin-top: 3rem;">
+        <div class="footer-contenido">
+            <p><strong>ManaTrip</strong> - Descubre el corazón de la República Dominicana.</p>
+            
+            <ul style="list-style: none; padding: 0; display: flex; justify-content: center; gap: 1rem;">
+                <li><a href="/" style="text-decoration: none; color: #333;">Inicio</a></li>
+                <li><a href="/destinos" style="text-decoration: none; color: #333;">Destinos</a></li>
+                <li><a href="/login" style="text-decoration: none; color: #333;">Iniciar Sesión</a></li>
+                <li><a href="/contacto" style="text-decoration: none; color: #005A9C;">Contacto</a></li>
+            </ul>
+
+            <p style="font-size: 0.9rem; color: #666; margin-top: 1rem;">
+                &copy; 2026 Equipo 5 - Universidad APEC (UNAPEC). Todos los derechos reservados.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
