@@ -1,25 +1,23 @@
 const express = require('express');
-const cors = require('cors');
-const path = require('path');
+const cors = require('cors'); 
 require('dotenv').config();
-const rutasUsuarios = require('./backend/routes/usuarios');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
-app.use(cors());
+// ==========================================
+// MIDDLEWARES GLOBALES
+// ==========================================
+app.use(cors()); 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.static('src')); 
 
-// Archivos estáticos (frontend)
-app.use(express.static(path.join(__dirname, 'src')));
-
-// Ruta de prueba
-app.get('/api', (req, res) => {
-  res.json({ mensaje: 'ManaTrips API funcionando correctamente' });
-});
+// ==========================================
+// RUTAS DE LA API (BACKEND)
+// ==========================================
+const rutasUsuarios = require('./backend/routes/usuarios');
 app.use('/api/usuarios', rutasUsuarios);
-// Iniciar servidor
+
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor backend de ManaTrip corriendo en http://localhost:${PORT}`);
 });
