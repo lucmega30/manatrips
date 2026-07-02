@@ -130,7 +130,7 @@
         <input type="password" id="password" placeholder="Tu contraseña">
       </div>
 
-      <button class="btn-login">Iniciar Sesión</button>
+      <button class="btn-login" onclick="iniciarSesion()">Iniciar Sesión</button>
 
       <div class="login-footer">
         <p>¿No tienes cuenta? <a href="#">Regístrate</a></p>
@@ -138,6 +138,37 @@
     </div>
   </div>
 
-  <script src="../js/main.js"></script>
+  <script>
+async function iniciarSesion() {
+  const correo = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  if (!correo || !password) {
+    alert('Por favor completa todos los campos.');
+    return;
+  }
+
+  try {
+    const respuesta = await fetch('/api/usuarios/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo, password })
+    });
+
+    const datos = await respuesta.json();
+
+    if (respuesta.ok) {
+      localStorage.setItem('token', datos.token);
+      localStorage.setItem('usuario', JSON.stringify(datos.usuario));
+      alert('¡Bienvenido, ' + datos.usuario.nombre + '!');
+      window.location.href = '/';
+    } else {
+      alert('Error: ' + datos.error);
+    }
+  } catch (error) {
+    alert('No se pudo conectar con el servidor.');
+  }
+}
+</script>
 </body>
 </html>
