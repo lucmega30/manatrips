@@ -33,7 +33,7 @@ CREATE TABLE usuarios (
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(150) NOT NULL UNIQUE,
     contrasena VARCHAR(255) NOT NULL,
-    rol VARCHAR(20) DEFAULT 'usuario'
+    rol VARCHAR(20) DEFAULT 'usuario',
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -106,10 +106,10 @@ INSERT INTO categorias (nombre, descripcion) VALUES
 ('Aventura', 'Actividades de adrenalina y deportes extremos');
 
 -- Usuarios de prueba
-INSERT INTO usuarios (nombre, correo, contrasena) VALUES
-('Emilio Sena', 'emilio.sena@example.com', 'hash_temporal_1'),
-('Lucas Mejía', 'lucas.mejia@example.com', 'hash_temporal_2'),
-('Elías Pérez', 'elias.perez@example.com', 'hash_temporal_3');
+INSERT INTO usuarios (nombre, correo, contrasena, rol) VALUES
+('Emilio Sena', 'emilio.sena@example.com', 'hash_temporal_1', 'admin'),
+('Lucas Mejía', 'lucas.mejia@example.com', 'hash_temporal_2', 'admin'),
+('Elías Pérez', 'elias.perez@example.com', 'hash_temporal_3', 'usuario');
 
 -- Destinos turisticos dominicanos (al menos 5, requerido por la tarea)
 INSERT INTO destinos (nombre, descripcion, provincia, id_categoria, precio_estimado, imagen_url) VALUES
