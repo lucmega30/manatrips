@@ -33,6 +33,7 @@ CREATE TABLE usuarios (
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(150) NOT NULL UNIQUE,
     contrasena VARCHAR(255) NOT NULL,
+    rol VARCHAR(20) DEFAULT 'usuario'
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
