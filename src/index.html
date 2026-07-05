@@ -18,7 +18,11 @@
       <li><a href="#">Inicio</a></li>
       <li><a href="#">Destinos</a></li>
       <li><a href="/contacto">Contacto</a></li>
-      <li><a href="/login">Iniciar Sesión</a></li>
+      <li id="navLoginItem"><a href="/login">Iniciar Sesión</a></li>
+      <li id="navUserItem" style="display: none; gap: 10px;">
+        <span id="navUserNombre"></span>
+        <button id="btnCerrarSesion">Cerrar Sesión</button>
+      </li>
     </ul>
   </nav>
 
@@ -69,5 +73,25 @@
   </section>
 
   <script src="js/main.js"></script>
+  <script>
+    (function verificarSesionNavbar() {
+      const token = localStorage.getItem('token');
+      const usuarioGuardado = localStorage.getItem('usuario');
+
+      if (token && usuarioGuardado) {
+        const usuario = JSON.parse(usuarioGuardado);
+
+        document.getElementById('navLoginItem').style.display = 'none';
+        document.getElementById('navUserItem').style.display = 'flex';
+        document.getElementById('navUserNombre').textContent = 'Hola, ' + usuario.nombre;
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          window.location.href = '/';
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
