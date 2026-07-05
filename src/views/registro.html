@@ -144,6 +144,11 @@
   </div>
 
   <script>
+    if (localStorage.getItem('token')) {
+      window.location.href = '/';
+    }
+  </script>
+  <script>
 async function registrarse() {
   const nombre = document.getElementById('nombre').value;
   const correo = document.getElementById('email').value;

@@ -139,6 +139,11 @@
   </div>
 
   <script>
+    if (localStorage.getItem('token')) {
+      window.location.href = '/';
+    }
+  </script>
+  <script>
 async function iniciarSesion() {
   const correo = document.getElementById('email').value;
   const password = document.getElementById('password').value;
