@@ -119,6 +119,8 @@
     <div class="login-card">
       <h2>Crear cuenta</h2>
       <p class="subtitulo">Regístrate para empezar a explorar la República Dominicana.</p>
+      
+      <div id="mensajeAlerta" style="display: none; padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;"></div>
 
       <div class="campo">
         <label for="nombre">Nombre completo</label>
@@ -153,9 +155,22 @@ async function registrarse() {
   const nombre = document.getElementById('nombre').value;
   const correo = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  const mensaje = document.getElementById('mensajeAlerta');
+
+  function mostrarMensaje(texto, tipo) {
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+    if (tipo === 'error') {
+      mensaje.style.backgroundColor = '#fdecea';
+      mensaje.style.color = '#c0392b';
+    } else {
+      mensaje.style.backgroundColor = '#e8f8f0';
+      mensaje.style.color = '#1e8449';
+    }
+  }
 
   if (!nombre || !correo || !password) {
-    alert('Por favor completa todos los campos.');
+    mostrarMensaje('Por favor completa todos los campos.', 'error');
     return;
   }
 
@@ -169,13 +184,15 @@ async function registrarse() {
     const datos = await respuesta.json();
 
     if (respuesta.ok) {
-      alert('¡Cuenta creada con éxito! Ya puedes iniciar sesión.');
-      window.location.href = '/login';
+      mostrarMensaje('¡Cuenta creada con éxito! Redirigiendo a inicio de sesión...', 'exito');
+      setTimeout(function() {
+        window.location.href = '/login';
+      }, 1200);
     } else {
-      alert('Error: ' + (datos.error || datos.errores[0].msg));
+      mostrarMensaje(datos.error || datos.errores[0].msg, 'error');
     }
   } catch (error) {
-    alert('No se pudo conectar con el servidor.');
+    mostrarMensaje('No se pudo conectar con el servidor.', 'error');
   }
 }
   </script>

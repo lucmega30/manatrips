@@ -119,6 +119,8 @@
     <div class="login-card">
       <h2>Bienvenido de vuelta</h2>
       <p class="subtitulo">Inicia sesión para continuar explorando la República Dominicana.</p>
+      
+      <div id="mensajeAlerta" style="display: none; padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;"></div>
 
       <div class="campo">
         <label for="email">Correo electrónico</label>
@@ -147,9 +149,22 @@
 async function iniciarSesion() {
   const correo = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  const mensaje = document.getElementById('mensajeAlerta');
+
+  function mostrarMensaje(texto, tipo) {
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+    if (tipo === 'error') {
+      mensaje.style.backgroundColor = '#fdecea';
+      mensaje.style.color = '#c0392b';
+    } else {
+      mensaje.style.backgroundColor = '#e8f8f0';
+      mensaje.style.color = '#1e8449';
+    }
+  }
 
   if (!correo || !password) {
-    alert('Por favor completa todos los campos.');
+    mostrarMensaje('Por favor completa todos los campos.', 'error');
     return;
   }
 
@@ -165,13 +180,15 @@ async function iniciarSesion() {
     if (respuesta.ok) {
       localStorage.setItem('token', datos.token);
       localStorage.setItem('usuario', JSON.stringify(datos.usuario));
-      alert('¡Bienvenido, ' + datos.usuario.nombre + '!');
-      window.location.href = '/';
+      mostrarMensaje('¡Bienvenido, ' + datos.usuario.nombre + '! Redirigiendo...', 'exito');
+      setTimeout(function() {
+        window.location.href = '/';
+      }, 1200);
     } else {
-      alert('Error: ' + datos.error);
+      mostrarMensaje('Error: ' + datos.error, 'error');
     }
   } catch (error) {
-    alert('No se pudo conectar con el servidor.');
+    mostrarMensaje('No se pudo conectar con el servidor.', 'error');
   }
 }
 </script>
