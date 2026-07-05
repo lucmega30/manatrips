@@ -1,10 +1,9 @@
-// db.js
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Creamos un pool de conexiones para manejar las peticiones eficientemente
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 3308,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
