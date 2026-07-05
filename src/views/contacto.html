@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto - ManaTrips</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .contacto-page {
+      min-height: calc(100vh - 130px);
+      background-color: #f0f8ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .contacto-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .contacto-card h2 {
+      color: #1a3a5c;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .contacto-card p.subtitulo {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+
+    .campo {
+      margin-bottom: 20px;
+    }
+
+    .campo label {
+      display: block;
+      color: #1a3a5c;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .campo input,
+    .campo textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .campo input:focus,
+    .campo textarea:focus {
+      outline: none;
+      border-color: #00b4d8;
+    }
+
+    .campo textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn-contacto {
+      width: 100%;
+      background-color: #f4623a;
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-contacto:hover {
+      background-color: #d94f2a;
+    }
+
+    .footer {
+      background-color: #1a3a5c;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 0;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding: 0;
+      margin-bottom: 15px;
+    }
+
+    .footer-links a {
+      color: #00b4d8;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer p {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <img src="../images/mtlogonotext.png" alt="ManaTrips Logo" height="100">
+      <span>Mana<span style="color: #f4623a;">Trips</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+      <li><a href="/login">Iniciar Sesión</a></li>
+    </ul>
+  </nav>
+
+  <!-- CONTACTO -->
+  <div class="contacto-page">
+    <div class="contacto-card">
+      <h2>Contáctanos</h2>
+      <p class="subtitulo">¿Tienes alguna duda sobre nuestros destinos o te gustaría ser un proveedor local en ManaTrips? Llena el formulario y nos comunicaremos contigo.</p>
+
+      <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Ej. Juan Pérez">
+      </div>
+
+      <div class="campo">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" placeholder="tu@correo.com">
+      </div>
+
+      <div class="campo">
+        <label for="asunto">Asunto</label>
+        <input type="text" id="asunto" placeholder="Motivo de tu mensaje">
+      </div>
+
+      <div class="campo">
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" placeholder="Escribe tu mensaje aquí..."></textarea>
+      </div>
+
+      <button class="btn-contacto">Enviar Mensaje</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <ul class="footer-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/login">Iniciar Sesión</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+    </ul>
+    <p>&copy; 2026 Equipo 5 - Universidad APEC (UNAPEC). Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

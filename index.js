@@ -33,6 +33,10 @@ app.get('/registro', (req, res) => {
   res.sendFile(path.join(__dirname, 'src', 'views', 'registro.html'));
 });
 
+app.get('/contacto', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'views', 'contacto.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor backend de ManaTrip corriendo en http://localhost:${PORT}`);
 });
