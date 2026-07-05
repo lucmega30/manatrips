@@ -28,7 +28,7 @@
 
   <!-- HERO -->
   <section class="hero">
-    <h1>Descubre la República Dominicana</h1>
+    <h1 id="heroTitulo">Descubre la República Dominicana</h1>
     <p>Encuentra destinos, compara presupuestos y planifica tu próxima aventura.</p>
     <a href="#" class="btn">Explorar Destinos</a>
   </section>
@@ -84,6 +84,7 @@
         document.getElementById('navLoginItem').style.display = 'none';
         document.getElementById('navUserItem').style.display = 'flex';
         document.getElementById('navUserNombre').textContent = 'Hola, ' + usuario.nombre;
+        document.getElementById('heroTitulo').textContent = 'Bienvenido de vuelta, ' + usuario.nombre;
 
         document.getElementById('btnCerrarSesion').addEventListener('click', function() {
           localStorage.removeItem('token');
