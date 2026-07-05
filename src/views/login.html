@@ -109,9 +109,14 @@
     <ul class="nav-links">
       <li><a href="/">Inicio</a></li>
       <li><a href="#">Destinos</a></li>
-      <li><a href="#">Contacto</a></li>
+      <li><a href="/contacto">Contacto</a></li>
       <li><a href="/src/views/login.html">Iniciar Sesión</a></li>
     </ul>
+    <button class="hamburguesa" id="btnHamburguesa" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
 
   <!-- LOGIN -->
@@ -191,6 +196,11 @@ async function iniciarSesion() {
     mostrarMensaje('No se pudo conectar con el servidor.', 'error');
   }
 }
+</script>
+<script>
+    document.getElementById('btnHamburguesa').addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.toggle('activo');
+    });
 </script>
 </body>
 </html>

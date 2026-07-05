@@ -48,6 +48,75 @@ body {
   transform: scale(1.3);
 }
 
+.hamburguesa {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.hamburguesa span {
+  width: 26px;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .hamburguesa {
+    display: flex;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #1a3a5c;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 10px 0;
+  }
+
+  .nav-links.activo {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+    padding: 12px 40px;
+  }
+
+  .navbar {
+    position: relative;
+  }
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .hero {
+    padding: 70px 20px;
+  }
+
+  .card {
+    width: 45%;
+  }
+
+  .login-card,
+  .contacto-card {
+    padding: 25px;
+  }
+}
+
 .nav-links li {
   display: flex;
   align-items: center;

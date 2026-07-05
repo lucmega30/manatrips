@@ -24,6 +24,11 @@
         <button id="btnCerrarSesion">Cerrar Sesión</button>
       </li>
     </ul>
+    <button class="hamburguesa" id="btnHamburguesa" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
 
   <!-- HERO -->
@@ -93,6 +98,11 @@
         });
       }
     })();
+  </script>
+  <script>
+    document.getElementById('btnHamburguesa').addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.toggle('activo');
+    });
   </script>
 </body>
 </html>
