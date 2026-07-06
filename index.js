@@ -19,6 +19,9 @@ app.use(express.static('src'));
 const rutasUsuarios = require('./backend/routes/usuarios');
 app.use('/api/usuarios', rutasUsuarios);
 
+const rutasDestinos = require('./backend/routes/destinos');
+app.use('/api/destinos', rutasDestinos);
+
 // Ruta de prueba
 app.get('/api', (req, res) => {
   res.json({ mensaje: 'ManaTrips API funcionando correctamente' });
@@ -35,6 +38,10 @@ app.get('/registro', (req, res) => {
 
 app.get('/contacto', (req, res) => {
   res.sendFile(path.join(__dirname, 'src', 'views', 'contacto.html'));
+});
+
+app.get('/destinos', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'views', 'destinos.html'));
 });
 
 app.listen(PORT, () => {

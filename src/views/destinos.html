@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Destinos - ManaTrips</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .destinos-page {
+      padding: 60px 20px;
+      min-height: calc(100vh - 260px);
+    }
+
+    .destinos-page h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #1a3a5c;
+    }
+
+    .destinos-page p.subtitulo-destinos {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .destinos-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .destino-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      width: 300px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+
+    .destino-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .destino-imagen {
+      height: 160px;
+      background: linear-gradient(135deg, #1a3a5c, #00b4d8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .destino-info {
+      padding: 20px;
+    }
+
+    .destino-categoria {
+      display: inline-block;
+      background-color: #e8f8fc;
+      color: #00b4d8;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .destino-info h3 {
+      color: #1a3a5c;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .destino-info p.provincia {
+      color: #999;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+
+    .destino-info p.descripcion {
+      color: #555;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .destino-precio {
+      color: #f4623a;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .destinos-mensaje {
+      text-align: center;
+      color: #666;
+      padding: 40px;
+    }
+
+    .footer {
+      background-color: #1a3a5c;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 0;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding: 0;
+      margin-bottom: 15px;
+    }
+
+    .footer-links a {
+      color: #00b4d8;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer p {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <img src="../images/mtlogonotext.png" alt="ManaTrips Logo" height="100">
+      <span>Mana<span style="color: #f4623a;">Trips</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+      <li id="navLoginItem"><a href="/login">Iniciar Sesión</a></li>
+      <li id="navUserItem" style="display: none; gap: 10px;">
+        <span id="navUserNombre"></span>
+        <button id="btnCerrarSesion">Cerrar Sesión</button>
+      </li>
+    </ul>
+    <button class="hamburguesa" id="btnHamburguesa" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- DESTINOS -->
+  <div class="destinos-page">
+    <h2>Descubre nuestros destinos</h2>
+    <p class="subtitulo-destinos">Explora los lugares más hermosos de la República Dominicana.</p>
+
+    <div class="destinos-grid" id="destinosGrid">
+      <p class="destinos-mensaje">Cargando destinos...</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <ul class="footer-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/login">Iniciar Sesión</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+    </ul>
+    <p>&copy; 2026 Equipo 5 - Universidad APEC (UNAPEC). Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    document.getElementById('btnHamburguesa').addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.toggle('activo');
+    });
+  </script>
+  <script>
+    (function verificarSesionNavbar() {
+      const token = localStorage.getItem('token');
+      const usuarioGuardado = localStorage.getItem('usuario');
+
+      if (token && usuarioGuardado) {
+        const usuario = JSON.parse(usuarioGuardado);
+
+        document.getElementById('navLoginItem').style.display = 'none';
+        document.getElementById('navUserItem').style.display = 'flex';
+        document.getElementById('navUserNombre').textContent = 'Hola, ' + usuario.nombre;
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          window.location.href = '/';
+        });
+      }
+    })();
+  </script>
+  <script>
+    async function cargarDestinos() {
+      const contenedor = document.getElementById('destinosGrid');
+
+      try {
+        const respuesta = await fetch('/api/destinos');
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok || !datos.destinos || datos.destinos.length === 0) {
+          contenedor.innerHTML = '<p class="destinos-mensaje">No hay destinos disponibles por el momento.</p>';
+          return;
+        }
+
+        contenedor.innerHTML = '';
+
+        datos.destinos.forEach(function(destino) {
+          const precio = destino.precio_estimado > 0
+            ? 'RD$ ' + Number(destino.precio_estimado).toLocaleString('es-DO')
+            : 'Gratis';
+
+          const card = document.createElement('div');
+          card.className = 'destino-card';
+          card.innerHTML = `
+            <div class="destino-imagen">${destino.nombre}</div>
+            <div class="destino-info">
+              <span class="destino-categoria">${destino.categoria || 'General'}</span>
+              <h3>${destino.nombre}</h3>
+              <p class="provincia">${destino.provincia}</p>
+              <p class="descripcion">${destino.descripcion}</p>
+              <p class="destino-precio">${precio}</p>
+            </div>
+          `;
+          contenedor.appendChild(card);
+        });
+      } catch (error) {
+        contenedor.innerHTML = '<p class="destinos-mensaje">No se pudo conectar con el servidor.</p>';
+      }
+    }
+
+    cargarDestinos();
+  </script>
+</body>
+</html>
