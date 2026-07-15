@@ -206,6 +206,11 @@ body {
   padding: 0;
 }
 
+.card {
+  text-decoration: none;
+  display: block;
+}
+
 .card-inner {
   width: 100%;
   height: 100%;

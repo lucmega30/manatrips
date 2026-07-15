@@ -23,6 +23,37 @@
       color: #666;
       margin-bottom: 40px;
     }
+    
+    .filtros-categoria {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .filtro-btn {
+      background-color: white;
+      color: #1a3a5c;
+      border: 2px solid #e0e0e0;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filtro-btn:hover {
+      border-color: #00b4d8;
+      color: #00b4d8;
+    }
+
+    .filtro-btn.activo {
+      background-color: #1a3a5c;
+      color: white;
+      border-color: #1a3a5c;
+    }
 
     .destinos-grid {
       display: flex;
@@ -169,6 +200,15 @@
     <h2>Descubre nuestros destinos</h2>
     <p class="subtitulo-destinos">Explora los lugares más hermosos de la República Dominicana.</p>
 
+    <div class="filtros-categoria" id="filtrosCategoria">
+      <button class="filtro-btn" data-categoria="">Todos</button>
+      <button class="filtro-btn" data-categoria="Playa">Playa</button>
+      <button class="filtro-btn" data-categoria="Montaña">Montaña</button>
+      <button class="filtro-btn" data-categoria="Ecoturismo">Ecoturismo</button>
+      <button class="filtro-btn" data-categoria="Histórico">Histórico</button>
+      <button class="filtro-btn" data-categoria="Aventura">Aventura</button>
+    </div>
+
     <div class="destinos-grid" id="destinosGrid">
       <p class="destinos-mensaje">Cargando destinos...</p>
     </div>
@@ -212,15 +252,17 @@
     })();
   </script>
   <script>
-    async function cargarDestinos() {
+    async function cargarDestinos(categoria) {
       const contenedor = document.getElementById('destinosGrid');
+      contenedor.innerHTML = '<p class="destinos-mensaje">Cargando destinos...</p>';
 
       try {
-        const respuesta = await fetch('/api/destinos');
+        const url = categoria ? '/api/destinos?categoria=' + encodeURIComponent(categoria) : '/api/destinos';
+        const respuesta = await fetch(url);
         const datos = await respuesta.json();
 
         if (!respuesta.ok || !datos.destinos || datos.destinos.length === 0) {
-          contenedor.innerHTML = '<p class="destinos-mensaje">No hay destinos disponibles por el momento.</p>';
+          contenedor.innerHTML = '<p class="destinos-mensaje">No hay destinos disponibles en esta categoría.</p>';
           return;
         }
 
@@ -250,7 +292,27 @@
       }
     }
 
-    cargarDestinos();
+    function marcarBotonActivo(categoria) {
+      document.querySelectorAll('.filtro-btn').forEach(function(btn) {
+        btn.classList.toggle('activo', btn.dataset.categoria === categoria);
+      });
+    }
+
+    document.querySelectorAll('.filtro-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const categoria = btn.dataset.categoria;
+        marcarBotonActivo(categoria);
+        cargarDestinos(categoria);
+
+        const nuevaUrl = categoria ? '/destinos?categoria=' + encodeURIComponent(categoria) : '/destinos';
+        window.history.replaceState(null, '', nuevaUrl);
+      });
+    });
+
+    const parametros = new URLSearchParams(window.location.search);
+    const categoriaInicial = parametros.get('categoria') || '';
+    marcarBotonActivo(categoriaInicial);
+    cargarDestinos(categoriaInicial);
   </script>
 </body>
 </html>

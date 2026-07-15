@@ -3,17 +3,28 @@ const router = express.Router();
 const db = require('../db');
 
 // ==========================================
-// RUTA: OBTENER TODOS LOS DESTINOS
+// RUTA: OBTENER DESTINOS (con filtro opcional por categoria)
 // ==========================================
 router.get('/', async (req, res) => {
     try {
-        const [destinos] = await db.query(`
+        const { categoria } = req.query;
+
+        let sql = `
             SELECT d.id_destino, d.nombre, d.descripcion, d.provincia, 
                    d.precio_estimado, d.imagen_url, c.nombre AS categoria
             FROM destinos d
             LEFT JOIN categorias c ON d.id_categoria = c.id_categoria
-            ORDER BY d.id_destino ASC
-        `);
+        `;
+        const parametros = [];
+
+        if (categoria) {
+            sql += ' WHERE c.nombre = ?';
+            parametros.push(categoria);
+        }
+
+        sql += ' ORDER BY d.id_destino ASC';
+
+        const [destinos] = await db.query(sql, parametros);
 
         res.json({ destinos });
     } catch (error) {
