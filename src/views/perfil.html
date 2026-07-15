@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil - ManaTrips</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .perfil-page {
+      min-height: calc(100vh - 130px);
+      background-color: #f0f8ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .perfil-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .perfil-card h2 {
+      color: #1a3a5c;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    .perfil-card p.subtitulo {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+
+    .perfil-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .perfil-tab {
+      background: none;
+      border: none;
+      padding: 10px 5px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #999;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .perfil-tab.activo {
+      color: #1a3a5c;
+      border-bottom-color: #f4623a;
+    }
+
+    .perfil-seccion {
+      display: none;
+    }
+
+    .perfil-seccion.activo {
+      display: block;
+    }
+
+    .campo {
+      margin-bottom: 20px;
+    }
+
+    .campo label {
+      display: block;
+      color: #1a3a5c;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .campo input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+
+    .campo input:focus {
+      outline: none;
+      border-color: #00b4d8;
+    }
+
+    .btn-perfil {
+      width: 100%;
+      background-color: #f4623a;
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-perfil:hover {
+      background-color: #d94f2a;
+    }
+
+    .mensaje-perfil {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .perfil-rol {
+      display: inline-block;
+      background-color: #e8f8fc;
+      color: #00b4d8;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-transform: capitalize;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <img src="../images/mtlogonotext.png" alt="ManaTrips Logo" height="100">
+      <span>Mana<span style="color: #f4623a;">Trips</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+      <li id="navLoginItem"><a href="/login">Iniciar Sesión</a></li>
+      <li id="navUserItem" style="display: none; gap: 10px; align-items: center;">
+        <span id="navUserNombre"></span>
+        <a href="/perfil" style="color: #00b4d8; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Mi Perfil</a>
+        <button id="btnCerrarSesion">Cerrar Sesión</button>
+      </li>
+    </ul>
+    <button class="hamburguesa" id="btnHamburguesa" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- PERFIL -->
+  <div class="perfil-page">
+    <div class="perfil-card">
+      <h2>Mi Perfil</h2>
+      <p class="subtitulo">Consulta y actualiza tu información personal.</p>
+      <span class="perfil-rol" id="perfilRol"></span>
+
+      <div class="perfil-tabs">
+        <button class="perfil-tab activo" data-tab="datos">Mis Datos</button>
+        <button class="perfil-tab" data-tab="password">Contraseña</button>
+      </div>
+
+      <!-- SECCION DATOS -->
+      <div class="perfil-seccion activo" id="seccionDatos">
+        <div id="mensajeDatos" class="mensaje-perfil"></div>
+
+        <div class="campo">
+          <label for="perfilNombre">Nombre completo</label>
+          <input type="text" id="perfilNombre" placeholder="Tu nombre">
+        </div>
+
+        <div class="campo">
+          <label for="perfilCorreo">Correo electrónico</label>
+          <input type="email" id="perfilCorreo" placeholder="tu@correo.com">
+        </div>
+
+        <button class="btn-perfil" onclick="actualizarDatos()">Guardar cambios</button>
+      </div>
+
+      <!-- SECCION CONTRASEÑA -->
+      <div class="perfil-seccion" id="seccionPassword">
+        <div id="mensajePassword" class="mensaje-perfil"></div>
+
+        <div class="campo">
+          <label for="passwordActual">Contraseña actual</label>
+          <input type="password" id="passwordActual" placeholder="Tu contraseña actual">
+        </div>
+
+        <div class="campo">
+          <label for="passwordNueva">Nueva contraseña</label>
+          <input type="password" id="passwordNueva" placeholder="Mínimo 6 caracteres">
+        </div>
+
+        <button class="btn-perfil" onclick="cambiarPassword()">Actualizar contraseña</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+    document.getElementById('btnHamburguesa').addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.toggle('activo');
+    });
+  </script>
+  <script>
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = '/login';
+    }
+  </script>
+  <script>
+    (function verificarSesionNavbar() {
+      const usuarioGuardado = localStorage.getItem('usuario');
+
+      if (token && usuarioGuardado) {
+        const usuario = JSON.parse(usuarioGuardado);
+
+        document.getElementById('navLoginItem').style.display = 'none';
+        document.getElementById('navUserItem').style.display = 'flex';
+        document.getElementById('navUserNombre').textContent = 'Hola, ' + usuario.nombre;
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          window.location.href = '/';
+        });
+      }
+    })();
+  </script>
+  <script>
+    document.querySelectorAll('.perfil-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.perfil-tab').forEach(function(t) { t.classList.remove('activo'); });
+        document.querySelectorAll('.perfil-seccion').forEach(function(s) { s.classList.remove('activo'); });
+
+        tab.classList.add('activo');
+        document.getElementById('seccion' + (tab.dataset.tab === 'datos' ? 'Datos' : 'Password')).classList.add('activo');
+      });
+    });
+
+    function mostrarMensaje(elementoId, texto, tipo) {
+      const mensaje = document.getElementById(elementoId);
+      mensaje.textContent = texto;
+      mensaje.style.display = 'block';
+      if (tipo === 'error') {
+        mensaje.style.backgroundColor = '#fdecea';
+        mensaje.style.color = '#c0392b';
+      } else {
+        mensaje.style.backgroundColor = '#e8f8f0';
+        mensaje.style.color = '#1e8449';
+      }
+    }
+
+    async function cargarPerfil() {
+      try {
+        const respuesta = await fetch('/api/usuarios/perfil', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          document.getElementById('perfilNombre').value = datos.perfil.nombre;
+          document.getElementById('perfilCorreo').value = datos.perfil.correo;
+          document.getElementById('perfilRol').textContent = datos.perfil.rol;
+        } else {
+          mostrarMensaje('mensajeDatos', 'Error: ' + datos.error, 'error');
+        }
+      } catch (error) {
+        mostrarMensaje('mensajeDatos', 'No se pudo conectar con el servidor.', 'error');
+      }
+    }
+
+    async function actualizarDatos() {
+      const nombre = document.getElementById('perfilNombre').value;
+      const correo = document.getElementById('perfilCorreo').value;
+
+      if (!nombre || !correo) {
+        mostrarMensaje('mensajeDatos', 'Por favor completa todos los campos.', 'error');
+        return;
+      }
+
+      try {
+        const respuesta = await fetch('/api/usuarios/perfil/actualizar', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ nombre, correo })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          localStorage.setItem('usuario', JSON.stringify(datos.usuario));
+          mostrarMensaje('mensajeDatos', datos.mensaje, 'exito');
+          document.getElementById('navUserNombre').textContent = 'Hola, ' + datos.usuario.nombre;
+        } else {
+          const textoError = datos.error || (datos.errores && datos.errores[0].msg) || 'Ocurrió un error.';
+          mostrarMensaje('mensajeDatos', textoError, 'error');
+        }
+      } catch (error) {
+        mostrarMensaje('mensajeDatos', 'No se pudo conectar con el servidor.', 'error');
+      }
+    }
+
+    async function cambiarPassword() {
+      const passwordActual = document.getElementById('passwordActual').value;
+      const passwordNueva = document.getElementById('passwordNueva').value;
+
+      if (!passwordActual || !passwordNueva) {
+        mostrarMensaje('mensajePassword', 'Por favor completa todos los campos.', 'error');
+        return;
+      }
+
+      try {
+        const respuesta = await fetch('/api/usuarios/perfil/cambiar-password', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ passwordActual, passwordNueva })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          mostrarMensaje('mensajePassword', datos.mensaje + ' Redirigiendo...', 'exito');
+          document.getElementById('passwordActual').value = '';
+          document.getElementById('passwordNueva').value = '';
+          setTimeout(function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            window.location.href = '/login';
+          }, 1800);
+        } else {
+          const textoError = datos.error || (datos.errores && datos.errores[0].msg) || 'Ocurrió un error.';
+          mostrarMensaje('mensajePassword', textoError, 'error');
+        }
+      } catch (error) {
+        mostrarMensaje('mensajePassword', 'No se pudo conectar con el servidor.', 'error');
+      }
+    }
+
+    cargarPerfil();
+  </script>
+</body>
+</html>
