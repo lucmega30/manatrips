@@ -129,6 +129,106 @@
       font-weight: bold;
       font-size: 1.1rem;
     }
+    
+    .destino-estrellas {
+      color: #f4623a;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+
+    .destino-sin-calificar {
+      color: #999;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+
+    .btn-ver-comentarios {
+      background: none;
+      border: none;
+      color: #00b4d8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    .btn-ver-comentarios:hover {
+      text-decoration: underline;
+    }
+
+    .panel-comentarios {
+      display: none;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .panel-comentarios.activo {
+      display: block;
+    }
+
+    .comentario-item {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .comentario-item:last-child {
+      border-bottom: none;
+    }
+
+    .comentario-usuario {
+      font-weight: 600;
+      color: #1a3a5c;
+      font-size: 0.85rem;
+    }
+
+    .comentario-estrellas {
+      color: #f4623a;
+      font-size: 0.8rem;
+    }
+
+    .comentario-texto {
+      color: #555;
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .form-comentario {
+      margin-top: 15px;
+    }
+
+    .form-comentario select,
+    .form-comentario textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .form-comentario button {
+      background-color: #f4623a;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .aviso-login-comentario {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 10px;
+    }
+
+    .aviso-login-comentario a {
+      color: #00b4d8;
+    }
 
     .destinos-mensaje {
       text-align: center;
@@ -252,6 +352,18 @@
     })();
   </script>
   <script>
+    const usuarioActual = JSON.parse(localStorage.getItem('usuario') || 'null');
+    const tokenActual = localStorage.getItem('token');
+
+    function generarEstrellas(promedio) {
+      const llenas = Math.round(promedio);
+      let estrellas = '';
+      for (let i = 1; i <= 5; i++) {
+        estrellas += i <= llenas ? '★' : '☆';
+      }
+      return estrellas;
+    }
+
     async function cargarDestinos(categoria) {
       const contenedor = document.getElementById('destinosGrid');
       contenedor.innerHTML = '<p class="destinos-mensaje">Cargando destinos...</p>';
@@ -273,6 +385,10 @@
             ? 'RD$ ' + Number(destino.precio_estimado).toLocaleString('es-DO')
             : 'Gratis';
 
+          const calificacionHTML = destino.calificacion_promedio
+            ? `<p class="destino-estrellas">${generarEstrellas(destino.calificacion_promedio)} ${destino.calificacion_promedio} (${destino.total_comentarios})</p>`
+            : `<p class="destino-sin-calificar">Sin calificaciones aún</p>`;
+
           const card = document.createElement('div');
           card.className = 'destino-card';
           card.innerHTML = `
@@ -283,12 +399,115 @@
               <p class="provincia">${destino.provincia}</p>
               <p class="descripcion">${destino.descripcion}</p>
               <p class="destino-precio">${precio}</p>
+              ${calificacionHTML}
+              <button class="btn-ver-comentarios" data-id="${destino.id_destino}">Ver comentarios</button>
+              <div class="panel-comentarios" id="panel-${destino.id_destino}"></div>
             </div>
           `;
           contenedor.appendChild(card);
         });
+
+        document.querySelectorAll('.btn-ver-comentarios').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            toggleComentarios(btn.dataset.id, btn);
+          });
+        });
       } catch (error) {
         contenedor.innerHTML = '<p class="destinos-mensaje">No se pudo conectar con el servidor.</p>';
+      }
+    }
+
+    async function toggleComentarios(idDestino, btn) {
+      const panel = document.getElementById('panel-' + idDestino);
+      const yaAbierto = panel.classList.contains('activo');
+
+      if (yaAbierto) {
+        panel.classList.remove('activo');
+        btn.textContent = 'Ver comentarios';
+        return;
+      }
+
+      panel.classList.add('activo');
+      btn.textContent = 'Ocultar comentarios';
+      panel.innerHTML = '<p class="destinos-mensaje">Cargando...</p>';
+
+      try {
+        const respuesta = await fetch('/api/destinos/' + idDestino + '/comentarios');
+        const datos = await respuesta.json();
+
+        let html = '';
+
+        if (datos.comentarios && datos.comentarios.length > 0) {
+          datos.comentarios.forEach(function(c) {
+            html += `
+              <div class="comentario-item">
+                <span class="comentario-usuario">${c.usuario}</span>
+                <div class="comentario-estrellas">${generarEstrellas(c.calificacion)}</div>
+                ${c.comentario ? `<p class="comentario-texto">${c.comentario}</p>` : ''}
+              </div>
+            `;
+          });
+        } else {
+          html += '<p class="destinos-mensaje">Aún no hay comentarios para este destino.</p>';
+        }
+
+        if (usuarioActual && tokenActual) {
+          html += `
+            <div class="form-comentario">
+              <select id="calificacion-${idDestino}">
+                <option value="5">★★★★★ (5)</option>
+                <option value="4">★★★★☆ (4)</option>
+                <option value="3">★★★☆☆ (3)</option>
+                <option value="2">★★☆☆☆ (2)</option>
+                <option value="1">★☆☆☆☆ (1)</option>
+              </select>
+              <textarea id="texto-${idDestino}" placeholder="Escribe tu comentario (opcional)..."></textarea>
+              <button onclick="enviarComentario(${idDestino})">Publicar comentario</button>
+              <p id="mensaje-comentario-${idDestino}"></p>
+            </div>
+          `;
+        } else {
+          html += `<p class="aviso-login-comentario"><a href="/login">Inicia sesión</a> para dejar tu comentario.</p>`;
+        }
+
+        panel.innerHTML = html;
+      } catch (error) {
+        panel.innerHTML = '<p class="destinos-mensaje">No se pudieron cargar los comentarios.</p>';
+      }
+    }
+
+    async function enviarComentario(idDestino) {
+      const calificacion = document.getElementById('calificacion-' + idDestino).value;
+      const comentario = document.getElementById('texto-' + idDestino).value;
+      const mensaje = document.getElementById('mensaje-comentario-' + idDestino);
+
+      try {
+        const respuesta = await fetch('/api/destinos/' + idDestino + '/comentarios', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + tokenActual
+          },
+          body: JSON.stringify({ calificacion, comentario })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          mensaje.textContent = '¡Gracias por tu comentario!';
+          mensaje.style.color = '#1e8449';
+          setTimeout(function() {
+            const btn = document.querySelector('.btn-ver-comentarios[data-id="' + idDestino + '"]');
+            toggleComentarios(idDestino, btn);
+            toggleComentarios(idDestino, btn);
+          }, 1000);
+        } else {
+          mensaje.textContent = 'Error: ' + datos.error;
+          mensaje.style.color = '#c0392b';
+        }
+      } catch (error) {
+        mensaje.textContent = 'No se pudo enviar el comentario.';
+        mensaje.style.color = '#c0392b';
       }
     }
 
