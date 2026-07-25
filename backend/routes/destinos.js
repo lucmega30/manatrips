@@ -60,6 +60,36 @@ router.get('/', async (req, res) => {
 });
 
 // ==========================================
+// RUTA: OBTENER UN SOLO DESTINO POR ID
+// ==========================================
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [destinos] = await db.query(`
+            SELECT d.id_destino, d.nombre, d.descripcion, d.provincia, 
+                   d.precio_estimado, d.imagen_url, c.nombre AS categoria,
+                   ROUND(AVG(co.calificacion), 1) AS calificacion_promedio,
+                   COUNT(co.id_comentario) AS total_comentarios
+            FROM destinos d
+            LEFT JOIN categorias c ON d.id_categoria = c.id_categoria
+            LEFT JOIN comentarios co ON d.id_destino = co.id_destino
+            WHERE d.id_destino = ?
+            GROUP BY d.id_destino
+        `, [id]);
+
+        if (destinos.length === 0) {
+            return res.status(404).json({ error: "Destino no encontrado." });
+        }
+
+        res.json({ destino: destinos[0] });
+    } catch (error) {
+        console.error("ERROR AL OBTENER DESTINO:", error);
+        res.status(500).json({ error: "Hubo un error al obtener el destino." });
+    }
+});
+
+// ==========================================
 // RUTA: OBTENER COMENTARIOS DE UN DESTINO
 // ==========================================
 router.get('/:id/comentarios', async (req, res) => {

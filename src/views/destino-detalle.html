@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle del Destino - ManaTrips</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .detalle-page {
+      padding: 60px 20px;
+      min-height: calc(100vh - 260px);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .detalle-imagen {
+      height: 280px;
+      background: linear-gradient(135deg, #1a3a5c, #00b4d8);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .detalle-categoria {
+      display: inline-block;
+      background-color: #e8f8fc;
+      color: #00b4d8;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .detalle-page h2 {
+      color: #1a3a5c;
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+
+    .detalle-page .provincia {
+      color: #999;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .detalle-estrellas {
+      color: #f4623a;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    .detalle-sin-calificar {
+      color: #999;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .detalle-page .descripcion {
+      color: #555;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .detalle-precio {
+      color: #f4623a;
+      font-weight: bold;
+      font-size: 1.4rem;
+      margin-bottom: 30px;
+    }
+
+    .seccion {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+
+    .seccion h3 {
+      color: #1a3a5c;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+
+    /* RESERVA */
+    .form-reserva {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .form-reserva label {
+      display: block;
+      font-size: 0.9rem;
+      color: #1a3a5c;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-reserva input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .form-reserva button {
+      background-color: #f4623a;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 15px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .form-reserva button:hover {
+      opacity: 0.9;
+    }
+
+    .mensaje-reserva {
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+
+    .aviso-login-reserva {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+      color: #666;
+    }
+
+    .aviso-login-reserva a {
+      color: #00b4d8;
+      font-weight: 600;
+    }
+
+    /* COMENTARIOS */
+    .comentario-item {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .comentario-item:last-child {
+      border-bottom: none;
+    }
+
+    .comentario-usuario {
+      font-weight: 600;
+      color: #1a3a5c;
+      font-size: 0.9rem;
+    }
+
+    .comentario-estrellas {
+      color: #f4623a;
+      font-size: 0.85rem;
+    }
+
+    .comentario-texto {
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .form-comentario {
+      margin-top: 20px;
+    }
+
+    .form-comentario select,
+    .form-comentario textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .form-comentario button {
+      background-color: #00b4d8;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .aviso-login-comentario {
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 15px;
+    }
+
+    .aviso-login-comentario a {
+      color: #00b4d8;
+    }
+
+    .detalle-mensaje {
+      text-align: center;
+      color: #666;
+      padding: 40px;
+    }
+
+    .footer {
+      background-color: #1a3a5c;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 0;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding: 0;
+      margin-bottom: 15px;
+    }
+
+    .footer-links a {
+      color: #00b4d8;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer p {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <img src="../images/mtlogonotext.png" alt="ManaTrips Logo" height="100">
+      <span>Mana<span style="color: #f4623a;">Trips</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+      <li id="navLoginItem"><a href="/login">Iniciar Sesión</a></li>
+      <li id="navUserItem" style="display: none; gap: 10px; align-items: center;">
+        <span id="navUserNombre"></span>
+        <a href="/perfil" style="color: #00b4d8; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Mi Perfil</a>
+        <button id="btnCerrarSesion">Cerrar Sesión</button>
+      </li>
+    </ul>
+    <button class="hamburguesa" id="btnHamburguesa" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- DETALLE DEL DESTINO -->
+  <div class="detalle-page" id="detallePage">
+    <p class="detalle-mensaje">Cargando destino...</p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <ul class="footer-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/login">Iniciar Sesión</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+    </ul>
+    <p>&copy; 2026 Equipo 5 - Universidad APEC (UNAPEC). Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    document.getElementById('btnHamburguesa').addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.toggle('activo');
+    });
+  </script>
+  <script>
+    (function verificarSesionNavbar() {
+      const token = localStorage.getItem('token');
+      const usuarioGuardado = localStorage.getItem('usuario');
+
+      if (token && usuarioGuardado) {
+        const usuario = JSON.parse(usuarioGuardado);
+
+        document.getElementById('navLoginItem').style.display = 'none';
+        document.getElementById('navUserItem').style.display = 'flex';
+        document.getElementById('navUserNombre').textContent = 'Hola, ' + usuario.nombre;
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          window.location.href = '/';
+        });
+      }
+    })();
+  </script>
+  <script>
+    const usuarioActual = JSON.parse(localStorage.getItem('usuario') || 'null');
+    const tokenActual = localStorage.getItem('token');
+
+    // Extraer el id del destino desde la URL: /destino/5
+    const partesUrl = window.location.pathname.split('/');
+    const idDestino = partesUrl[partesUrl.length - 1];
+
+    function generarEstrellas(promedio) {
+      const llenas = Math.round(promedio);
+      let estrellas = '';
+      for (let i = 1; i <= 5; i++) {
+        estrellas += i <= llenas ? '★' : '☆';
+      }
+      return estrellas;
+    }
+
+    async function cargarDestino() {
+      const contenedor = document.getElementById('detallePage');
+
+      try {
+        const respuesta = await fetch('/api/destinos/' + idDestino);
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok || !datos.destino) {
+          contenedor.innerHTML = '<p class="detalle-mensaje">No se encontró este destino.</p>';
+          return;
+        }
+
+        const destino = datos.destino;
+        const precio = destino.precio_estimado > 0
+          ? 'RD$ ' + Number(destino.precio_estimado).toLocaleString('es-DO')
+          : 'Gratis';
+
+        const calificacionHTML = destino.calificacion_promedio
+          ? `<p class="detalle-estrellas">${generarEstrellas(destino.calificacion_promedio)} ${destino.calificacion_promedio} (${destino.total_comentarios} reseñas)</p>`
+          : `<p class="detalle-sin-calificar">Sin calificaciones aún</p>`;
+
+        const bloqueReserva = (usuarioActual && tokenActual)
+          ? `
+            <div class="form-reserva">
+              <label for="fechaViaje">Selecciona la fecha de tu viaje</label>
+              <input type="date" id="fechaViaje">
+              <button onclick="enviarReserva()">Reservar ahora</button>
+              <p class="mensaje-reserva" id="mensajeReserva"></p>
+            </div>
+          `
+          : `
+            <div class="aviso-login-reserva">
+              <p><a href="/login">Inicia sesión</a> para poder reservar este destino.</p>
+            </div>
+          `;
+
+        contenedor.innerHTML = `
+          <div class="detalle-imagen">${destino.nombre}</div>
+          <span class="detalle-categoria">${destino.categoria || 'General'}</span>
+          <h2>${destino.nombre}</h2>
+          <p class="provincia">${destino.provincia}</p>
+          ${calificacionHTML}
+          <p class="descripcion">${destino.descripcion}</p>
+          <p class="detalle-precio">${precio}</p>
+
+          <div class="seccion">
+            <h3>Reserva tu viaje</h3>
+            ${bloqueReserva}
+          </div>
+
+          <div class="seccion">
+            <h3>Comentarios y calificaciones</h3>
+            <div id="listaComentarios"><p class="detalle-mensaje">Cargando comentarios...</p></div>
+          </div>
+        `;
+
+        cargarComentarios();
+      } catch (error) {
+        contenedor.innerHTML = '<p class="detalle-mensaje">No se pudo conectar con el servidor.</p>';
+      }
+    }
+
+    async function cargarComentarios() {
+      const contenedor = document.getElementById('listaComentarios');
+
+      try {
+        const respuesta = await fetch('/api/destinos/' + idDestino + '/comentarios');
+        const datos = await respuesta.json();
+
+        let html = '';
+
+        if (datos.comentarios && datos.comentarios.length > 0) {
+          datos.comentarios.forEach(function(c) {
+            html += `
+              <div class="comentario-item">
+                <span class="comentario-usuario">${c.usuario}</span>
+                <div class="comentario-estrellas">${generarEstrellas(c.calificacion)}</div>
+                ${c.comentario ? `<p class="comentario-texto">${c.comentario}</p>` : ''}
+              </div>
+            `;
+          });
+        } else {
+          html += '<p class="detalle-mensaje">Aún no hay comentarios para este destino.</p>';
+        }
+
+        if (usuarioActual && tokenActual) {
+          html += `
+            <div class="form-comentario">
+              <select id="calificacionNueva">
+                <option value="5">★★★★★ (5)</option>
+                <option value="4">★★★★☆ (4)</option>
+                <option value="3">★★★☆☆ (3)</option>
+                <option value="2">★★☆☆☆ (2)</option>
+                <option value="1">★☆☆☆☆ (1)</option>
+              </select>
+              <textarea id="textoNuevo" placeholder="Escribe tu comentario (opcional)..."></textarea>
+              <button onclick="enviarComentario()">Publicar comentario</button>
+              <p class="mensaje-reserva" id="mensajeComentario"></p>
+            </div>
+          `;
+        } else {
+          html += `<p class="aviso-login-comentario"><a href="/login">Inicia sesión</a> para dejar tu comentario.</p>`;
+        }
+
+        contenedor.innerHTML = html;
+      } catch (error) {
+        contenedor.innerHTML = '<p class="detalle-mensaje">No se pudieron cargar los comentarios.</p>';
+      }
+    }
+
+    async function enviarComentario() {
+      const calificacion = document.getElementById('calificacionNueva').value;
+      const comentario = document.getElementById('textoNuevo').value;
+      const mensaje = document.getElementById('mensajeComentario');
+
+      try {
+        const respuesta = await fetch('/api/destinos/' + idDestino + '/comentarios', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + tokenActual
+          },
+          body: JSON.stringify({ calificacion, comentario })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          mensaje.textContent = '¡Gracias por tu comentario!';
+          mensaje.style.color = '#1e8449';
+          setTimeout(cargarDestino, 1000);
+        } else {
+          mensaje.textContent = 'Error: ' + datos.error;
+          mensaje.style.color = '#c0392b';
+        }
+      } catch (error) {
+        mensaje.textContent = 'No se pudo enviar el comentario.';
+        mensaje.style.color = '#c0392b';
+      }
+    }
+
+    async function enviarReserva() {
+      const fechaViaje = document.getElementById('fechaViaje').value;
+      const mensaje = document.getElementById('mensajeReserva');
+
+      if (!fechaViaje) {
+        mensaje.textContent = 'Selecciona una fecha para tu viaje.';
+        mensaje.style.color = '#c0392b';
+        return;
+      }
+
+      try {
+        const respuesta = await fetch('/api/reservas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + tokenActual
+          },
+          body: JSON.stringify({ id_destino: idDestino, fecha_viaje: fechaViaje })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          mensaje.textContent = '¡Reserva creada con éxito! Puedes verla en tu perfil, en la pestaña "Mis Reservas".';
+          mensaje.style.color = '#1e8449';
+        } else {
+          mensaje.textContent = 'Error: ' + datos.error;
+          mensaje.style.color = '#c0392b';
+        }
+      } catch (error) {
+        mensaje.textContent = 'No se pudo crear la reserva.';
+        mensaje.style.color = '#c0392b';
+      }
+    }
+
+    cargarDestino();
+  </script>
+</body>
+</html>

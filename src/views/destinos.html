@@ -391,21 +391,26 @@
             : `<p class="destino-sin-calificar">Sin calificaciones aún</p>`;
 
           const card = document.createElement('div');
-          card.className = 'destino-card';
-          card.innerHTML = `
-            <div class="destino-imagen">${destino.nombre}</div>
-            <div class="destino-info">
-              <span class="destino-categoria">${destino.categoria || 'General'}</span>
-              <h3>${destino.nombre}</h3>
-              <p class="provincia">${destino.provincia}</p>
-              <p class="descripcion">${destino.descripcion}</p>
-              <p class="destino-precio">${precio}</p>
-              ${calificacionHTML}
-              <button class="btn-ver-comentarios" data-id="${destino.id_destino}">Ver comentarios</button>
-              <div class="panel-comentarios" id="panel-${destino.id_destino}"></div>
-            </div>
-          `;
-          contenedor.appendChild(card);
+card.className = 'destino-card';
+card.innerHTML = `
+  <a href="/destino/${destino.id_destino}" style="text-decoration: none; color: inherit;">
+    <div class="destino-imagen">${destino.nombre}</div>
+  </a>
+  <div class="destino-info">
+    <span class="destino-categoria">${destino.categoria || 'General'}</span>
+    <a href="/destino/${destino.id_destino}" style="text-decoration: none; color: inherit;">
+      <h3>${destino.nombre}</h3>
+    </a>
+    <p class="provincia">${destino.provincia}</p>
+    <p class="descripcion">${destino.descripcion}</p>
+    <p class="destino-precio">${precio}</p>
+    ${calificacionHTML}
+    <a href="/destino/${destino.id_destino}" style="display: inline-block; margin-top: 8px; color: #f4623a; font-weight: 600; font-size: 0.9rem; text-decoration: none;">Ver detalle y reservar →</a>
+    <button class="btn-ver-comentarios" data-id="${destino.id_destino}" style="display: block; margin-top: 8px;">Ver comentarios</button>
+    <div class="panel-comentarios" id="panel-${destino.id_destino}"></div>
+  </div>
+`;
+contenedor.appendChild(card);
         });
 
         document.querySelectorAll('.btn-ver-comentarios').forEach(function(btn) {
