@@ -24,6 +24,10 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
+    .perfil-card.ancho-reservas {
+      max-width: 700px;
+    }
+
     .perfil-card h2 {
       color: #1a3a5c;
       font-size: 1.6rem;
@@ -41,6 +45,7 @@
       gap: 10px;
       margin-bottom: 28px;
       border-bottom: 2px solid #eee;
+      flex-wrap: wrap;
     }
 
     .perfil-tab {
@@ -132,6 +137,131 @@
       margin-bottom: 20px;
       text-transform: capitalize;
     }
+
+    /* MIS RESERVAS */
+    .reserva-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      background: #f8fbff;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .reserva-info h4 {
+      color: #1a3a5c;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .reserva-info p {
+      color: #666;
+      font-size: 0.85rem;
+      margin: 2px 0;
+    }
+
+    .reserva-estado {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: capitalize;
+      margin-top: 6px;
+    }
+
+    .estado-pendiente {
+      background-color: #fff4e5;
+      color: #b26a00;
+    }
+
+    .estado-confirmada {
+      background-color: #e8f8f0;
+      color: #1e8449;
+    }
+
+    .estado-cancelada {
+      background-color: #fdecea;
+      color: #c0392b;
+    }
+
+    .btn-cancelar-reserva {
+      background-color: white;
+      color: #c0392b;
+      border: 2px solid #c0392b;
+      padding: 8px 16px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-cancelar-reserva:hover {
+      background-color: #fdecea;
+    }
+
+    .btn-cancelar-reserva:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .reserva-item {
+  position: relative;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.reserva-item-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.confirmacion-cancelar {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e0e8f0;
+}
+
+.confirmacion-cancelar p {
+  color: #1a3a5c;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.confirmacion-botones {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-confirmar-si {
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  padding: 7px 16px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-confirmar-no {
+  background-color: white;
+  color: #666;
+  border: 2px solid #ddd;
+  padding: 7px 16px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+    
   </style>
 </head>
 <body>
@@ -162,7 +292,7 @@
 
   <!-- PERFIL -->
   <div class="perfil-page">
-    <div class="perfil-card">
+    <div class="perfil-card" id="perfilCard">
       <h2>Mi Perfil</h2>
       <p class="subtitulo">Consulta y actualiza tu información personal.</p>
       <span class="perfil-rol" id="perfilRol"></span>
@@ -170,6 +300,7 @@
       <div class="perfil-tabs">
         <button class="perfil-tab activo" data-tab="datos">Mis Datos</button>
         <button class="perfil-tab" data-tab="password">Contraseña</button>
+        <button class="perfil-tab" data-tab="reservas">Mis Reservas</button>
       </div>
 
       <!-- SECCION DATOS -->
@@ -204,6 +335,14 @@
         </div>
 
         <button class="btn-perfil" onclick="cambiarPassword()">Actualizar contraseña</button>
+      </div>
+
+      <!-- SECCION MIS RESERVAS -->
+      <div class="perfil-seccion" id="seccionReservas">
+        <div id="mensajeReservas" class="mensaje-perfil"></div>
+        <div id="listaReservas">
+          <p style="color: #666; text-align: center; padding: 20px 0;">Cargando reservas...</p>
+        </div>
       </div>
     </div>
   </div>
@@ -247,7 +386,16 @@
         document.querySelectorAll('.perfil-seccion').forEach(function(s) { s.classList.remove('activo'); });
 
         tab.classList.add('activo');
-        document.getElementById('seccion' + (tab.dataset.tab === 'datos' ? 'Datos' : 'Password')).classList.add('activo');
+
+        const nombresSeccion = { datos: 'Datos', password: 'Password', reservas: 'Reservas' };
+        document.getElementById('seccion' + nombresSeccion[tab.dataset.tab]).classList.add('activo');
+
+        const card = document.getElementById('perfilCard');
+        card.classList.toggle('ancho-reservas', tab.dataset.tab === 'reservas');
+
+        if (tab.dataset.tab === 'reservas') {
+          cargarReservas();
+        }
       });
     });
 
@@ -357,7 +505,117 @@
       }
     }
 
-    cargarPerfil();
+    function formatearFecha(fechaStr) {
+      const fecha = new Date(fechaStr);
+      return fecha.toLocaleDateString('es-DO', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    async function cargarReservas() {
+      const contenedor = document.getElementById('listaReservas');
+      contenedor.innerHTML = '<p style="color: #666; text-align: center; padding: 20px 0;">Cargando reservas...</p>';
+
+      try {
+        const respuesta = await fetch('/api/reservas/mis-reservas', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+          contenedor.innerHTML = '<p style="color: #666; text-align: center; padding: 20px 0;">Error al cargar tus reservas.</p>';
+          return;
+        }
+
+        if (!datos.reservas || datos.reservas.length === 0) {
+          contenedor.innerHTML = '<p style="color: #666; text-align: center; padding: 20px 0;">Aún no tienes reservas. <a href="/destinos" style="color: #00b4d8;">Explora los destinos</a> y reserva tu próxima aventura.</p>';
+          return;
+        }
+
+        contenedor.innerHTML = '';
+
+        datos.reservas.forEach(function(reserva) {
+          const precio = reserva.precio_estimado > 0
+            ? 'RD$ ' + Number(reserva.precio_estimado).toLocaleString('es-DO')
+            : 'Gratis';
+
+          const puedeCancel = reserva.estado !== 'cancelada';
+
+          const item = document.createElement('div');
+          item.className = 'reserva-item';
+          item.innerHTML = `
+  <div class="reserva-item-fila">
+    <div class="reserva-info">
+      <h4>${reserva.destino_nombre}</h4>
+      <p>${reserva.provincia} · ${precio}</p>
+      <p>Fecha del viaje: ${formatearFecha(reserva.fecha_viaje)}</p>
+      <span class="reserva-estado estado-${reserva.estado}">${reserva.estado}</span>
+    </div>
+    <button class="btn-cancelar-reserva" data-id="${reserva.id_reserva}" ${puedeCancel ? '' : 'disabled'}>
+      ${puedeCancel ? 'Cancelar' : 'Cancelada'}
+    </button>
+  </div>
+`;
+          contenedor.appendChild(item);
+        });
+
+        document.querySelectorAll('.btn-cancelar-reserva').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    mostrarConfirmacionCancelar(btn);
+  });
+});
+      } catch (error) {
+        contenedor.innerHTML = '<p style="color: #666; text-align: center; padding: 20px 0;">No se pudo conectar con el servidor.</p>';
+      }
+    }
+
+    function mostrarConfirmacionCancelar(btn) {
+  const item = btn.closest('.reserva-item');
+
+  if (item.querySelector('.confirmacion-cancelar')) return;
+
+  const idReserva = btn.dataset.id;
+  btn.style.display = 'none';
+
+  const confirmacion = document.createElement('div');
+  confirmacion.className = 'confirmacion-cancelar';
+  confirmacion.innerHTML = `
+    <p>¿Seguro que deseas cancelar esta reserva?</p>
+    <div class="confirmacion-botones">
+      <button class="btn-confirmar-si" data-id="${idReserva}">Sí, cancelar</button>
+      <button class="btn-confirmar-no">Volver</button>
+    </div>
+  `;
+  item.appendChild(confirmacion);
+
+  confirmacion.querySelector('.btn-confirmar-si').addEventListener('click', function() {
+    cancelarReserva(idReserva);
+  });
+
+  confirmacion.querySelector('.btn-confirmar-no').addEventListener('click', function() {
+    confirmacion.remove();
+    btn.style.display = 'inline-block';
+  });
+}
+
+async function cancelarReserva(idReserva) {
+  try {
+    const respuesta = await fetch('/api/reservas/' + idReserva + '/cancelar', {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
+    const datos = await respuesta.json();
+
+    if (respuesta.ok) {
+      cargarReservas();
+    } else {
+      mostrarMensaje('mensajeReservas', 'Error: ' + datos.error, 'error');
+    }
+  } catch (error) {
+    mostrarMensaje('mensajeReservas', 'No se pudo cancelar la reserva.', 'error');
+  }
+}
+cargarPerfil();
   </script>
 </body>
 </html>
