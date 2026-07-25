@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración - ManaTrips</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .admin-page {
+      padding: 50px 20px;
+      min-height: calc(100vh - 260px);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .admin-encabezado {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .admin-encabezado h2 {
+      color: #1a3a5c;
+      font-size: 1.7rem;
+    }
+
+    .admin-encabezado p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .btn-nuevo-destino {
+      background-color: #f4623a;
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-nuevo-destino:hover {
+      background-color: #d94f2a;
+    }
+
+    .admin-mensaje {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    /* TABLA */
+    .tabla-wrapper {
+      background: white;
+      border-radius: 16px;
+      overflow-x: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    table.tabla-destinos {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    .tabla-destinos th {
+      text-align: left;
+      background-color: #f8fbff;
+      color: #1a3a5c;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 14px 16px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .tabla-destinos td {
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: #444;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+
+    .tabla-destinos tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tabla-categoria-pill {
+      display: inline-block;
+      background-color: #e8f8fc;
+      color: #00b4d8;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .acciones-fila {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-accion {
+      border: none;
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-editar {
+      background-color: #e8f8fc;
+      color: #00b4d8;
+    }
+
+    .btn-editar:hover {
+      background-color: #d0f0f9;
+    }
+
+    .btn-eliminar {
+      background-color: #fdecea;
+      color: #c0392b;
+    }
+
+    .btn-eliminar:hover {
+      background-color: #fadbd8;
+    }
+
+    .confirmacion-eliminar {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #fff8f6;
+      border-radius: 8px;
+      border: 1px solid #fdecea;
+    }
+
+    .confirmacion-eliminar p {
+      color: #1a3a5c;
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+    }
+
+    .confirmacion-botones {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-confirmar-si {
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-confirmar-no {
+      background-color: white;
+      color: #666;
+      border: 1px solid #ddd;
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* MODAL FORMULARIO */
+    .modal-fondo {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(26, 58, 92, 0.55);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-fondo.activo {
+      display: flex;
+    }
+
+    .modal-formulario {
+      background: white;
+      border-radius: 16px;
+      padding: 35px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-formulario h3 {
+      color: #1a3a5c;
+      font-size: 1.3rem;
+      margin-bottom: 22px;
+    }
+
+    .campo {
+      margin-bottom: 18px;
+    }
+
+    .campo label {
+      display: block;
+      color: #1a3a5c;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+    }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Segoe UI', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .campo textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .campo input:focus,
+    .campo select:focus,
+    .campo textarea:focus {
+      outline: none;
+      border-color: #00b4d8;
+    }
+
+    .fila-doble {
+      display: flex;
+      gap: 15px;
+    }
+
+    .fila-doble .campo {
+      flex: 1;
+    }
+
+    .modal-botones {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-guardar {
+      flex: 1;
+      background-color: #f4623a;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-guardar:hover {
+      background-color: #d94f2a;
+    }
+
+    .btn-cerrar-modal {
+      background-color: white;
+      color: #666;
+      border: 2px solid #ddd;
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .admin-vacio {
+      text-align: center;
+      color: #666;
+      padding: 50px;
+    }
+
+    .admin-acceso-denegado {
+      text-align: center;
+      padding: 80px 20px;
+      color: #666;
+    }
+
+    .footer {
+      background-color: #1a3a5c;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 0;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding: 0;
+      margin-bottom: 15px;
+    }
+
+    .footer-links a {
+      color: #00b4d8;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer p {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <img src="../images/mtlogonotext.png" alt="ManaTrips Logo" height="100">
+      <span>Mana<span style="color: #f4623a;">Trips</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+      <li id="navLoginItem"><a href="/login">Iniciar Sesión</a></li>
+      <li id="navUserItem" style="display: none; gap: 10px; align-items: center;">
+        <span id="navUserNombre"></span>
+        <a href="/perfil" style="color: #00b4d8; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Mi Perfil</a>
+        <a href="/admin" id="navAdminItem" style="display: none; color: #f4623a; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Panel Admin</a>
+        <button id="btnCerrarSesion">Cerrar Sesión</button>
+      </li>
+    </ul>
+    <button class="hamburguesa" id="btnHamburguesa" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <div id="contenidoAdmin">
+    <div class="admin-page">
+      <p style="text-align: center; color: #666; padding: 50px 0;">Verificando acceso...</p>
+    </div>
+  </div>
+
+  <!-- MODAL FORMULARIO (se muestra solo si es admin) -->
+  <div class="modal-fondo" id="modalFondo">
+    <div class="modal-formulario">
+      <h3 id="modalTitulo">Nuevo destino</h3>
+      <div id="mensajeModal" class="admin-mensaje"></div>
+
+      <input type="hidden" id="destinoId">
+
+      <div class="campo">
+        <label for="campoNombre">Nombre del destino</label>
+        <input type="text" id="campoNombre" placeholder="Ej. Playa Bávaro">
+      </div>
+
+      <div class="fila-doble">
+        <div class="campo">
+          <label for="campoProvincia">Provincia</label>
+          <input type="text" id="campoProvincia" placeholder="Ej. Punta Cana">
+        </div>
+        <div class="campo">
+          <label for="campoCategoria">Categoría</label>
+          <select id="campoCategoria">
+            <option value="">Sin categoría</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="campoDescripcion">Descripción</label>
+        <textarea id="campoDescripcion" placeholder="Describe el destino..."></textarea>
+      </div>
+
+      <div class="fila-doble">
+        <div class="campo">
+          <label for="campoPrecio">Precio estimado (RD$)</label>
+          <input type="number" id="campoPrecio" placeholder="0" min="0" step="0.01">
+        </div>
+        <div class="campo">
+          <label for="campoImagen">URL de imagen</label>
+          <input type="text" id="campoImagen" placeholder="https://...">
+        </div>
+      </div>
+
+      <div class="modal-botones">
+        <button class="btn-guardar" onclick="guardarDestino()">Guardar</button>
+        <button class="btn-cerrar-modal" onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <ul class="footer-links">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/destinos">Destinos</a></li>
+      <li><a href="/login">Iniciar Sesión</a></li>
+      <li><a href="/contacto">Contacto</a></li>
+    </ul>
+    <p>&copy; 2026 Equipo 5 - Universidad APEC (UNAPEC). Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    document.getElementById('btnHamburguesa').addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.toggle('activo');
+    });
+  </script>
+  <script>
+    const token = localStorage.getItem('token');
+    const usuarioGuardado = JSON.parse(localStorage.getItem('usuario') || 'null');
+
+    if (!token || !usuarioGuardado) {
+      window.location.href = '/login';
+    }
+  </script>
+  <script>
+    (function verificarSesionNavbar() {
+      if (token && usuarioGuardado) {
+        document.getElementById('navLoginItem').style.display = 'none';
+        document.getElementById('navUserItem').style.display = 'flex';
+        document.getElementById('navUserNombre').textContent = 'Hola, ' + usuarioGuardado.nombre;
+
+        if (usuarioGuardado.rol === 'admin') {
+          document.getElementById('navAdminItem').style.display = 'inline-block';
+        }
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+          window.location.href = '/';
+        });
+      }
+    })();
+  </script>
+  <script>
+    let categoriasDisponibles = [];
+
+    function verificarAccesoAdmin() {
+      const contenedor = document.getElementById('contenidoAdmin');
+
+      if (!usuarioGuardado || usuarioGuardado.rol !== 'admin') {
+        contenedor.innerHTML = `
+          <div class="admin-page">
+            <div class="admin-acceso-denegado">
+              <h2 style="color: #1a3a5c; margin-bottom: 10px;">Acceso restringido</h2>
+              <p>Esta sección es exclusiva para administradores.</p>
+              <p style="margin-top: 15px;"><a href="/" style="color: #00b4d8; font-weight: 600;">Volver al inicio</a></p>
+            </div>
+          </div>
+        `;
+        return false;
+      }
+
+      contenedor.innerHTML = `
+        <div class="admin-page">
+          <div class="admin-encabezado">
+            <div>
+              <h2>Panel de Administración</h2>
+              <p>Gestiona los destinos turísticos de ManaTrips.</p>
+            </div>
+            <button class="btn-nuevo-destino" onclick="abrirModalNuevo()">+ Nuevo destino</button>
+          </div>
+
+          <div id="mensajeAdmin" class="admin-mensaje"></div>
+
+          <div class="tabla-wrapper">
+            <table class="tabla-destinos">
+              <thead>
+                <tr>
+                  <th>Destino</th>
+                  <th>Provincia</th>
+                  <th>Categoría</th>
+                  <th>Precio</th>
+                  <th>Calificación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="cuerpoTablaDestinos">
+                <tr><td colspan="6" class="admin-vacio">Cargando destinos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      return true;
+    }
+
+    function mostrarMensaje(elementoId, texto, tipo) {
+      const mensaje = document.getElementById(elementoId);
+      if (!mensaje) return;
+      mensaje.textContent = texto;
+      mensaje.style.display = 'block';
+      if (tipo === 'error') {
+        mensaje.style.backgroundColor = '#fdecea';
+        mensaje.style.color = '#c0392b';
+      } else {
+        mensaje.style.backgroundColor = '#e8f8f0';
+        mensaje.style.color = '#1e8449';
+      }
+    }
+
+    async function cargarCategorias() {
+      try {
+        const respuesta = await fetch('/api/destinos/admin/categorias', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const datos = await respuesta.json();
+
+        if (respuesta.ok && datos.categorias) {
+          categoriasDisponibles = datos.categorias;
+          const select = document.getElementById('campoCategoria');
+          datos.categorias.forEach(function(cat) {
+            const opcion = document.createElement('option');
+            opcion.value = cat.id_categoria;
+            opcion.textContent = cat.nombre;
+            select.appendChild(opcion);
+          });
+        }
+      } catch (error) {
+        console.error('No se pudieron cargar las categorías.', error);
+      }
+    }
+
+    async function cargarDestinosAdmin() {
+      const cuerpo = document.getElementById('cuerpoTablaDestinos');
+
+      try {
+        const respuesta = await fetch('/api/destinos');
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok || !datos.destinos || datos.destinos.length === 0) {
+          cuerpo.innerHTML = '<tr><td colspan="6" class="admin-vacio">No hay destinos registrados.</td></tr>';
+          return;
+        }
+
+        cuerpo.innerHTML = '';
+
+        datos.destinos.forEach(function(destino) {
+          const precio = destino.precio_estimado > 0
+            ? 'RD$ ' + Number(destino.precio_estimado).toLocaleString('es-DO')
+            : 'Gratis';
+
+          const calificacion = destino.calificacion_promedio
+            ? '★ ' + destino.calificacion_promedio + ' (' + destino.total_comentarios + ')'
+            : 'Sin calificar';
+
+          const fila = document.createElement('tr');
+          fila.dataset.id = destino.id_destino;
+          fila.innerHTML = `
+            <td>${destino.nombre}</td>
+            <td>${destino.provincia}</td>
+            <td><span class="tabla-categoria-pill">${destino.categoria || 'General'}</span></td>
+            <td>${precio}</td>
+            <td>${calificacion}</td>
+            <td>
+              <div class="acciones-fila">
+                <button class="btn-accion btn-editar" data-id="${destino.id_destino}">Editar</button>
+                <button class="btn-accion btn-eliminar" data-id="${destino.id_destino}">Eliminar</button>
+              </div>
+            </td>
+          `;
+          cuerpo.appendChild(fila);
+        });
+
+        document.querySelectorAll('.btn-editar').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            abrirModalEditar(btn.dataset.id);
+          });
+        });
+
+        document.querySelectorAll('.btn-eliminar').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            mostrarConfirmacionEliminar(btn);
+          });
+        });
+      } catch (error) {
+        cuerpo.innerHTML = '<tr><td colspan="6" class="admin-vacio">No se pudo conectar con el servidor.</td></tr>';
+      }
+    }
+
+    function mostrarConfirmacionEliminar(btn) {
+      const fila = btn.closest('tr');
+
+      if (fila.querySelector('.confirmacion-eliminar')) return;
+
+      const idDestino = btn.dataset.id;
+      const celdaAcciones = fila.querySelector('.acciones-fila');
+      celdaAcciones.style.display = 'none';
+
+      const confirmacion = document.createElement('div');
+      confirmacion.className = 'confirmacion-eliminar';
+      confirmacion.innerHTML = `
+        <p>¿Eliminar este destino? Esta acción no se puede deshacer.</p>
+        <div class="confirmacion-botones">
+          <button class="btn-confirmar-si">Sí, eliminar</button>
+          <button class="btn-confirmar-no">Cancelar</button>
+        </div>
+      `;
+      fila.querySelector('td:last-child').appendChild(confirmacion);
+
+      confirmacion.querySelector('.btn-confirmar-si').addEventListener('click', function() {
+        eliminarDestino(idDestino);
+      });
+
+      confirmacion.querySelector('.btn-confirmar-no').addEventListener('click', function() {
+        confirmacion.remove();
+        celdaAcciones.style.display = 'flex';
+      });
+    }
+
+    async function eliminarDestino(idDestino) {
+      try {
+        const respuesta = await fetch('/api/destinos/' + idDestino, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          cargarDestinosAdmin();
+        } else {
+          mostrarMensaje('mensajeAdmin', 'Error: ' + datos.error, 'error');
+        }
+      } catch (error) {
+        mostrarMensaje('mensajeAdmin', 'No se pudo eliminar el destino.', 'error');
+      }
+    }
+
+    function abrirModalNuevo() {
+      document.getElementById('modalTitulo').textContent = 'Nuevo destino';
+      document.getElementById('destinoId').value = '';
+      document.getElementById('campoNombre').value = '';
+      document.getElementById('campoProvincia').value = '';
+      document.getElementById('campoCategoria').value = '';
+      document.getElementById('campoDescripcion').value = '';
+      document.getElementById('campoPrecio').value = '';
+      document.getElementById('campoImagen').value = '';
+      document.getElementById('mensajeModal').style.display = 'none';
+      document.getElementById('modalFondo').classList.add('activo');
+    }
+
+    async function abrirModalEditar(idDestino) {
+      try {
+        const respuesta = await fetch('/api/destinos/' + idDestino);
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok || !datos.destino) {
+          mostrarMensaje('mensajeAdmin', 'No se pudo cargar el destino para editar.', 'error');
+          return;
+        }
+
+        const destino = datos.destino;
+        const categoriaEncontrada = categoriasDisponibles.find(function(c) { return c.nombre === destino.categoria; });
+
+        document.getElementById('modalTitulo').textContent = 'Editar destino';
+        document.getElementById('destinoId').value = destino.id_destino;
+        document.getElementById('campoNombre').value = destino.nombre;
+        document.getElementById('campoProvincia').value = destino.provincia;
+        document.getElementById('campoCategoria').value = categoriaEncontrada ? categoriaEncontrada.id_categoria : '';
+        document.getElementById('campoDescripcion').value = destino.descripcion || '';
+        document.getElementById('campoPrecio').value = destino.precio_estimado || '';
+        document.getElementById('campoImagen').value = destino.imagen_url || '';
+        document.getElementById('mensajeModal').style.display = 'none';
+        document.getElementById('modalFondo').classList.add('activo');
+      } catch (error) {
+        mostrarMensaje('mensajeAdmin', 'No se pudo conectar con el servidor.', 'error');
+      }
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalFondo').classList.remove('activo');
+    }
+
+    async function guardarDestino() {
+      const idDestino = document.getElementById('destinoId').value;
+      const nombre = document.getElementById('campoNombre').value.trim();
+      const provincia = document.getElementById('campoProvincia').value.trim();
+      const id_categoria = document.getElementById('campoCategoria').value || null;
+      const descripcion = document.getElementById('campoDescripcion').value.trim();
+      const precio_estimado = document.getElementById('campoPrecio').value || 0;
+      const imagen_url = document.getElementById('campoImagen').value.trim();
+
+      if (!nombre || !provincia) {
+        mostrarMensaje('mensajeModal', 'El nombre y la provincia son obligatorios.', 'error');
+        return;
+      }
+
+      const cuerpoPeticion = { nombre, provincia, id_categoria, descripcion, precio_estimado, imagen_url };
+
+      try {
+        const url = idDestino ? '/api/destinos/' + idDestino : '/api/destinos';
+        const metodo = idDestino ? 'PUT' : 'POST';
+
+        const respuesta = await fetch(url, {
+          method: metodo,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(cuerpoPeticion)
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok) {
+          cerrarModal();
+          mostrarMensaje('mensajeAdmin', datos.mensaje, 'exito');
+          cargarDestinosAdmin();
+        } else {
+          mostrarMensaje('mensajeModal', 'Error: ' + datos.error, 'error');
+        }
+      } catch (error) {
+        mostrarMensaje('mensajeModal', 'No se pudo conectar con el servidor.', 'error');
+      }
+    }
+
+    if (verificarAccesoAdmin()) {
+      cargarCategorias();
+      cargarDestinosAdmin();
+    }
+  </script>
+</body>
+</html>

@@ -20,10 +20,11 @@
       <li><a href="/contacto">Contacto</a></li>
       <li id="navLoginItem"><a href="/login">Iniciar Sesión</a></li>
       <li id="navUserItem" style="display: none; gap: 10px; align-items: center;">
-        <span id="navUserNombre"></span>
-        <a href="/perfil" style="color: #00b4d8; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Mi Perfil</a>
-        <button id="btnCerrarSesion">Cerrar Sesión</button>
-      </li>
+  <span id="navUserNombre"></span>
+  <a href="/perfil" style="color: #00b4d8; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Mi Perfil</a>
+  <a href="/admin" id="navAdminItem" style="display: none; color: #f4623a; font-size: 0.85rem; text-decoration: none; font-weight: 600;">Panel Admin</a>
+  <button id="btnCerrarSesion">Cerrar Sesión</button>
+</li>
     </ul>
     <button class="hamburguesa" id="btnHamburguesa" aria-label="Abrir menú">
       <span></span>
@@ -90,6 +91,11 @@
         document.getElementById('navLoginItem').style.display = 'none';
         document.getElementById('navUserItem').style.display = 'flex';
         document.getElementById('navUserNombre').textContent = 'Hola, ' + usuario.nombre;
+        
+        if (usuario.rol === 'admin') {
+  document.getElementById('navAdminItem').style.display = 'inline-block';
+}
+        
         document.getElementById('heroTitulo').textContent = 'Bienvenido de vuelta, ' + usuario.nombre;
 
         document.getElementById('btnCerrarSesion').addEventListener('click', function() {

@@ -55,6 +55,10 @@ app.get('/destino/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'src', 'views', 'destino-detalle.html'));
 });
 
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'views', 'admin.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor backend de ManaTrip corriendo en http://localhost:${PORT}`);
 });
