@@ -27,6 +27,15 @@
       padding: 20px;
       margin-bottom: 30px;
     }
+    
+    .detalle-imagen-real {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+  margin-bottom: 30px;
+}
 
     .detalle-categoria {
       display: inline-block;
@@ -378,9 +387,13 @@
             </div>
           `;
 
-        contenedor.innerHTML = `
-          <div class="detalle-imagen">${destino.nombre}</div>
-          <span class="detalle-categoria">${destino.categoria || 'General'}</span>
+        const imagenDetalleHTML = destino.imagen_url
+  ? `<img src="${destino.imagen_url}" alt="${destino.nombre}" class="detalle-imagen-real" onerror="this.outerHTML='<div class=\\'detalle-imagen\\'>${destino.nombre}</div>'">`
+  : `<div class="detalle-imagen">${destino.nombre}</div>`;
+
+contenedor.innerHTML = `
+  ${imagenDetalleHTML}
+  <span class="detalle-categoria">${destino.categoria || 'General'}</span>
           <h2>${destino.nombre}</h2>
           <p class="provincia">${destino.provincia}</p>
           ${calificacionHTML}

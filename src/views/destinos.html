@@ -89,6 +89,13 @@
       text-align: center;
       padding: 10px;
     }
+    
+    .destino-imagen-real {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
 
     .destino-info {
       padding: 20px;
@@ -397,9 +404,13 @@
 
           const card = document.createElement('div');
 card.className = 'destino-card';
+const imagenHTML = destino.imagen_url
+  ? `<img src="${destino.imagen_url}" alt="${destino.nombre}" class="destino-imagen-real" onerror="this.parentElement.innerHTML='<div class=\\'destino-imagen\\'>${destino.nombre}</div>'">`
+  : `<div class="destino-imagen">${destino.nombre}</div>`;
+
 card.innerHTML = `
   <a href="/destino/${destino.id_destino}" style="text-decoration: none; color: inherit;">
-    <div class="destino-imagen">${destino.nombre}</div>
+    ${imagenHTML}
   </a>
   <div class="destino-info">
     <span class="destino-categoria">${destino.categoria || 'General'}</span>
